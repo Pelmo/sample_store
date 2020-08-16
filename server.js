@@ -13,6 +13,7 @@ mongoose.connect('mongodb://localhost/sample-store', { useNewUrlParser: true, us
 
     console.log('DB Connection Success')
 })
+
 const app = express()
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'hjs')
@@ -23,6 +24,10 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', home)
 app.use('/register', register)
 app.use('/login', login)
+
+app.use((err, req, res, next) =>{
+    res.render('error', {message: err.message})
+})
 
 app.listen(5000)
 console.log('App running on http://localhost:5000')
