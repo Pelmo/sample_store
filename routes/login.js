@@ -14,15 +14,36 @@ router.post('/', (req, res, next) => {
             return
         }
 
+        if (users.length == 0) {
+            res.json({
+                confirmation: 'fail',
+                error: 'User not found'
+            })
+
+            return
+        }
+
+        const user = users[0]
+
+        // check password:
+        if (user.password != req.body.password){
+            res.json({
+                confirmation: 'fail',
+                error: 'Incorrect Password'
+
+            })
+            return
+        }
+
         res.json({
             confirmation: 'success',
-            user: users
+            user: user
         })
     })
 
-    res.json({
-        data: req.body
-    })
+    // res.json({
+    //     data: req.body
+    // })
 })
 
 module.exports = router
