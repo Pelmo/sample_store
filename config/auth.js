@@ -1,5 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy
 const User = require('../models/User')
+const bcrypt = require('bcryptjs')
 
 module.exports = (passport) => {
 
@@ -25,13 +26,15 @@ module.exports = (passport) => {
         
         // user not found:
         if (user == null)
-        return next(new Error('User Not Found'))
+            return next(new Error('User Not Found'))
         
         // check password:
-        if (user.password != req.body.password){
-        return next(new Error('Incorrect Password'))
-        }
-        
+        // if (user.password != req.body.password){
+        // return next(new Error('Incorrect Password'))
+        // }
+        if (bcrypt.compareSync(password, user.password) == false) 
+            return next(new Error('Incorrect Password'))
+
         return next(null, user)
         
         })
@@ -39,4 +42,36 @@ module.exports = (passport) => {
        })
 	
        passport.use('localLogin', localLogin)
+
+       const localRegister = new LocalStrategy({
+        usernameField: 'email',
+        passwordField: 'password',
+        passReqToCallback: true
+       }, (req, email, password, next) => {
+        User.findOne({email: email}, (err, user) => {
+            if (err){
+                return next(err)
+            }
+            
+            // user not found:
+            if (user != null)
+                return next(new Error('User already exists, please log in.'))
+
+            // create the new user:
+            const hashedPw = bcrypt.hashSync(password, 10)
+            let isAdmin = false
+            if (email.indexOf('@gmail.com') != -1)
+                isAdmin = true
+            User.create({email:email, password:hashedPw}, (err, user) => {
+                if (err)
+                return next(err)
+                
+                next(null, user)
+               })
+
+            
+        })
+       })
+
+       passport.use('localRegister', localRegister)
 }

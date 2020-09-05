@@ -1,17 +1,31 @@
 const express = require('express')
 const router = express.Router()
- 
+ const items = [
+     {name:'Item 1', description:'', price:10},
+     {name:'Item 2', description:'', price:20},
+     {name:'Item 3', description:'', price:15},
+     {name:'Item 4', description:'', price:50},
+     {name:'Item 5', description:'', price:35},
+     {name:'Item 6', description:'', price:100}
+ ]
 router.get('/', (req, res, next) => {
- 
- res.json({
- user: req.user || 'not logged in'
- })
+const user = req.user
+if (user == null) {
+    res.redirect('/')
+    return 
+}
+
+const data = {
+    user: user,
+    items: items
+}
+
+res.render('account', data)
+
 })
  
 router.get('/logout', (req, res, next) => {
     req.logout()
-    res.json({
-    confirmaton: 'user logged out'
-    })
+    res.redirect('/')
    })
 module.exports = router

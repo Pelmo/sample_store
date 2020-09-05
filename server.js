@@ -9,7 +9,7 @@ const home = require('./routes/home')
 const register = require('./routes/register')
 const login = require('./routes/login')
 const account = require('./routes/account') //Import the account route
-
+const admin = require('./routes/admin')
 mongoose.connect('mongodb://localhost/sample-store', { useNewUrlParser: true, useUnifiedTopology: true }, (err, data ) => {
     if (err) {
         console.log('DB connection Failed')
@@ -37,7 +37,7 @@ app.use('/', home)
 app.use('/register', register)
 app.use('/login', login)
 app.use('/account', account)
-
+app.use('/admin', admin)
 app.use((err, req, res, next) =>{
     res.render('error', {message: err.message})
 })
